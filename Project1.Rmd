@@ -1,0 +1,71 @@
+---
+title: "MKT382 Project 1"
+author: "Matthew B. Brugman, , , , , "
+date: "February 20, 2016"
+output: pdf_document
+---
+
+### Descriptive Stats
+
+```{r}
+library(ggplot2)
+library(reshape2)
+library(stringr)
+
+df = read.table(file='Dominicks_scanner_data-orange_juice.txt', header=TRUE, sep='\t')
+
+summary(df[2:6])
+summary(df[7:11])
+
+xlabs = c("Tropicana Premium 64oz", "Tropicana Premium 96oz", 
+          "Tropicana 64 oz", "Minute Maid 64 oz","Dominick's 64 oz")
+
+sales_lf = stack(df, select=c(sales1, sales2, sales3, sales4, sales5))
+
+colnames(sales_lf) = c("Sales","Brand")
+
+p1 = ggplot(sales_lf, aes(y=Sales, x=Brand))+ 
+  geom_violin(aes(fill = factor(Brand)))+
+  scale_x_discrete(breaks=c("sales1", "sales2", "sales3", "sales4", "sales5"),
+                      labels=str_wrap(xlabs, width = 10))+
+  theme(legend.position = "none") + 
+  geom_boxplot(width=.08)
+
+p1
+
+
+
+price_lf = stack(df, select=c(price1, price2, price3, price4, price5))
+
+colnames(price_lf) = c("Price","Brand")
+
+p2 = ggplot(price_lf, aes(y=Price, x=Brand))+ 
+  geom_violin(aes(fill = factor(Brand)))+
+  scale_x_discrete(breaks=c("price1", "price2", "price3", "price4", "price5"),
+                      labels=str_wrap(xlabs, width = 10))+
+  theme(legend.position = "none") + 
+  geom_boxplot(width=.08)
+
+p2
+
+ms1 = sum(df$sales1*df$price1)/sum(df[2:6]*df[7:11])
+ms2 = sum(df$sales2*df$price2)/sum(df[2:6]*df[7:11])
+ms3 = sum(df$sales3*df$price3)/sum(df[2:6]*df[7:11])
+ms4 = sum(df$sales4*df$price4)/sum(df[2:6]*df[7:11])
+ms5 = sum(df$sales5*df$price5)/sum(df[2:6]*df[7:11])
+```
+
+### Pt 2
+
+```{r}
+#creating new variable for post promotion dip
+#fl = feature lag, or weeks since the last feature
+
+S1.lm = lm(log(sales1) ~ log(price1) + log(price2) + log(price3) + log(price4) + log(price5) + feat1 + disp1, data=df)
+S2.lm = lm(log(sales2) ~ log(price1) + log(price2) + log(price3) + log(price4) + log(price5) + feat2 + disp2, data=df)
+S3.lm = lm(log(sales3) ~ log(price1) + log(price2) + log(price3) + log(price4) + log(price5) + feat3 + disp3, data=df)
+S4.lm = lm(log(sales4) ~ log(price1) + log(price2) + log(price3) + log(price4) + log(price5) + feat4 + disp4, data=df)
+S5.lm = lm(log(sales5) ~ log(price1) + log(price2) + log(price3) + log(price4) + log(price5) + feat5 + disp5, data=df)
+
+
+```
